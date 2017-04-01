@@ -15,6 +15,7 @@ public class RoverFactory {
           return new PhotoRover();
       else if (type.equals("carbon"))
           return new CarbonRover();
-  }
+      else throw new IllegalArgumentException("Robot type must be <scouting> <photo> or <carbon>");
+  }	
 
 };

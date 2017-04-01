@@ -23,14 +23,14 @@ public class PhotoRover extends Rover {
     public void scanPosition() {
         Photo[] photos = new Photo[4];
 
-        for (int i=0 ; i<4 : ++i) {
+        for (int i=0 ; i<4 ; ++i) {
             photos[i].setCoord(getPosition());
-            photos[i].setDir(getOrientation());
-            rotate(orientation.next());
+            photos[i].setDirection(getOrientation());
+            rotate(getOrientation().next());
         }
 
         storage.add(new Scan(photos));
-        System.out.println("Rover ["+this.id+"] scanning "+this.position);
+        System.out.println("Rover ["+getId()+"] scanning "+getPosition());
     }
 
    public boolean sendData() {

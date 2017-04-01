@@ -11,6 +11,14 @@ public class Photo {
 
     private Coordinate coord;
     private ECardinalDirection dir;
+    
+    public void setCoord(Coordinate coord) {
+    	this.coord = coord;
+    }
+    
+    public void setDirection(ECardinalDirection dir) {
+    	this.dir = dir;
+    }
 
     public String toString() {
         return "Photo taken at (" + coord.getLongitude() + "," + coord.getLatitude() + ") facing" + dir;

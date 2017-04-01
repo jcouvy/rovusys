@@ -21,7 +21,7 @@ public class ScoutingRover extends Rover {
 
     public void savePosition() {
         storage.add(getPosition());
-        System.out.println("Rover ["+this.id+"] found an obstacle at "+this.position);
+        System.out.println("Rover ["+getId()+"] found an obstacle at "+getPosition());
     }
 
     public boolean sendData() {

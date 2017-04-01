@@ -21,7 +21,19 @@ public abstract class Rover extends Observer {
 
     public Rover() {
     }
-
+    
+    public int getId() {
+    	return id;
+    }
+    
+    public ECardinalDirection getOrientation() {
+    	return orientation;
+    }
+    
+    public Coordinate getPosition() {
+    	return position;
+    }
+    
     public void move(int dist) {
     }
 

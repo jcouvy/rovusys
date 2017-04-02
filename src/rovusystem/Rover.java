@@ -4,14 +4,15 @@
 
 package rovusystem;
 
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import java.util.ArrayList;
 
 public abstract class Rover extends Observer {
 
-    private int id;
-    private Coordinate position;
-    private int velocity;
+	//private int id;
+	//private Coordinate position;
+    private int velocity = 1;
     private boolean isOnline = true;
     private ECardinalDirection orientation;
     private ArrayList<Coordinate> route = new ArrayList<Coordinate>();
@@ -20,24 +21,34 @@ public abstract class Rover extends Observer {
     	super(pos, name);
     }
     
-    public int getId() {
+    /*public int getId() {
     	return id;
     }
+    */
     
     public ECardinalDirection getOrientation() {
     	return orientation;
     }
     
-    public Coordinate getPosition() {
+    public String getName() {
+    	return name;
+    }
+  
+
+    public void setOrientation(ECardinalDirection ori) {
+    	orientation = ori;
+    }
+    /*public Coordinate getPosition() {
     	return position;
     }
+    */
     
     public void move(int dist) {
     }
 
     public void rotate(ECardinalDirection dir) {
         orientation = dir;
-        System.out.println("Rover ["+this.id+"] rotates to "+orientation);
+        System.out.println("Rover ["+getName()+"] rotates to "+orientation);
     }
 
     public void moveToCoord(Coordinate coord) {
@@ -45,6 +56,8 @@ public abstract class Rover extends Observer {
 
     public void shutdown() {
         isOnline = false;
+        this.moveToStartPosition();
+        this.detach();
     }
 
     public abstract void freeStorage();
@@ -63,4 +76,59 @@ public abstract class Rover extends Observer {
             System.out.println("Cannot do that");
     }
 
+    /*****************************************************/
+    /** Methods to adapt our implementation with Simbad **/
+    /*****************************************************/
+    
+    /** Return the current location of the robot */
+    public Point3d location(){
+        Point3d loc = new Point3d();
+        this.getCoords(loc);
+        return loc;
+    }
+        
+    /** Change the robots direction to the opposite of its current direction */
+    public void reverse() {
+    	switch(getOrientation()) {
+    		case NORTH: 
+    			this.orientation = ECardinalDirection.SOUTH; break;
+    		case SOUTH: 
+    			this.orientation = ECardinalDirection.NORTH; break;
+    		case EAST: 
+    			this.orientation = ECardinalDirection.WEST; break;
+    		case WEST: 
+    			this.orientation = ECardinalDirection.EAST; break;
+    		default: break;
+    	}
+    	this.rotateY(Math.PI);
+        this.velocity = -velocity;
+    }
+    
+    /** Move the robot straight towards its current direction */
+    public void drive() {
+        this.setTranslationalVelocity(velocity);
+    }
+    
+    /** Stop the robot and start rotating **/
+    public void avoid() {
+    	this.setTranslationalVelocity(0);
+    	setRotationalVelocity(Math.PI / 2);
+    }
+        
+    /** This method is called by the simulator engine on reset. */
+    @Override
+    public void initBehavior() {
+        System.out.println("Spawning a new robot: " + getName());
+        
+        switch(getOrientation()) {
+	        case NORTH: this.rotateY(Math.PI); break;
+	        case EAST: this.rotateY(Math.PI / 2); break;
+			case WEST: this.rotateY(-Math.PI / 2); break;
+			case SOUTH: break;
+			default: break;
+	    }
+        
+        drive();
+    }    
+    
 };

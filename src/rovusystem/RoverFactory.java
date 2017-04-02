@@ -4,15 +4,17 @@
 
 package rovusystem;
 
+import javax.vecmath.Vector3d;
+
 public class RoverFactory {
 
-	public Rover createRover(String type) {
+	public Rover createRover(String type, Vector3d pos, String name) {
       if (type.equals("scouting"))
-          return new ScoutingRover();
+          return new ScoutingRover(pos, name);
       else if (type.equals("photo"))
-          return new PhotoRover();
+          return new PhotoRover(pos, name);
       else if (type.equals("carbon"))
-          return new CarbonRover();
+          return new CarbonRover(pos, name);
       else throw new IllegalArgumentException("Robot type must be <scouting> <photo> or <carbon>");
   }	
 

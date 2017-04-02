@@ -5,13 +5,14 @@
 package rovusystem;
 
 import java.util.ArrayList;
+import javax.vecmath.Vector3d;
 
 public class CarbonRover extends Rover {
 
     private ArrayList<Scan> storage;
 
-    public CarbonRover() {
-        super();
+    public CarbonRover(Vector3d pos, String name) {
+        super(pos, name);
         System.out.println("Creating a new PhotoRover object");
     }
 

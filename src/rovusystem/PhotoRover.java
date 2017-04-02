@@ -4,20 +4,27 @@
 
 package rovusystem;
 
+import java.awt.Color;
 import java.util.ArrayList;
+
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 public class PhotoRover extends Rover {
 
     private ArrayList<Scan> storage;
-
+    private Vector3d initPos;
+    private ECardinalDirection initDir;
+    
     public PhotoRover(Vector3d pos, String name) {
         super(pos, name);
         storage = new ArrayList<Scan>();
+        initPos = pos;
         System.out.println("Creating a new PhotoRover object");
     }
 
-    public void scanPosition() {
+ /*   public void scanPosition() {
         Photo[] photos = new Photo[4];
 
         for (int i=0 ; i<4 ; ++i) {
@@ -27,8 +34,8 @@ public class PhotoRover extends Rover {
         }
 
         storage.add(new Scan(photos));
-        System.out.println("Rover ["+getId()+"] scanning "+getPosition());
-    }
+        System.out.println("Rover ["+getName()+"] scanning "+getPosition());
+    }*/
 
    public boolean sendData() {
         return true;
@@ -38,4 +45,38 @@ public class PhotoRover extends Rover {
         storage.clear();
         System.out.println("Clearing storage");
     }
+    
+    /** Translate coords **/
+    public Vector3d coords(int x, int y) {
+        return new Vector3d(-y, 0, -x);
+    }
+    
+    private String state;
+    
+    /** This method is called cyclically (20 times per second) by the simulator engine. */
+    @Override
+    public void performBehavior() {
+    	if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+    		this.state = "COLLISION";
+    	} else {
+    		this.state = "SCOUTING";
+    	}
+    	
+    	switch(state) {
+    		case "SCOUTING":
+    			setColor(new Color3f(Color.GREEN));
+    	   		drive();
+                if ((getCounter() % 100) == 0) {
+                    setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
+                }
+                break;
+    		case "COLLISION":
+       			setColor(new Color3f(Color.RED));
+       			avoid();
+             	break;
+    		default:
+    			shutdown();
+    			break;
+    	}
+	}
 };

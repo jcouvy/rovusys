@@ -3,33 +3,62 @@ package rovusystem;
 
 import simbad.gui.*;
 import simbad.sim.*;
+
+import javax.vecmath.Color3f;
 import javax.vecmath.Vector3d;
 
-/**
-  Derivate your own code from this example.
- */
+import java.awt.Color;
+import java.util.ArrayList;
 
 
 public class ExampleMain {
 
     public static void main(String[] args) {
-        // request antialising so that diagonal lines are not "stairy"
         System.setProperty("j3d.implicitAntialiasing", "true");
         
-        // creation of the environment containing all obstacles and robots
-        EnvironmentDescription environment = new ExampleEnvironment();
-        
-        // crete two instances of the same example robot
-        PhotoRover rover1 = new PhotoRover(new Vector3d(0, 0, 0), "Robot 1");
-        ExampleRobot robot2 = new ExampleRobot(new Vector3d(-2, 0, -2), "Robot 2");
+        ExampleEnvironment env = new ExampleEnvironment();        
 
-        // add the two robots to the environment
-        environment.add(rover1);
-        environment.add(robot2);
+        CentralStation cs = CentralStation.getInstance();
+        RoverFactory rf = new RoverFactory();
+        ArrayList<Rover> swarm = new ArrayList<Rover>();
         
-        // here we create an instance of the whole Simbad simulator and we assign the newly created environment 
-        Simbad frame = new Simbad(environment, false);
+        PhotoRover photo1 = (PhotoRover) rf.createRover("photo", new Vector3d(0, 0, .5), "Photo 1"); 
+        photo1.setOrientation(ECardinalDirection.WEST);
+        PhotoRover photo2 = (PhotoRover) rf.createRover("photo", new Vector3d(.5, 0, 0), "Photo 2");
+        photo2.setOrientation(ECardinalDirection.SOUTH);
+        PhotoRover photo3 = (PhotoRover) rf.createRover("photo", new Vector3d(0, 0, -.5), "Photo 3");
+        photo3.setOrientation(ECardinalDirection.EAST);
+        PhotoRover photo4 = (PhotoRover) rf.createRover("photo", new Vector3d(-.5, 0, 0), "Photo 4");
+        photo4.setOrientation(ECardinalDirection.NORTH);
+
+/*        ScoutingRover scout1 = (ScoutingRover) rf.createRover("scouting", env.coords(4, -4), "Scout 1");
+        ScoutingRover scout2 = (ScoutingRover) rf.createRover("scouting", env.coords(4,  4), "Scout 2");
+*/        
+        swarm.add(photo1);
+        swarm.add(photo2);
+        swarm.add(photo3);
+        swarm.add(photo4);
+
+/*        swarm.add(scout1);
+        swarm.add(scout2);
+*/        
+        for (Observer obs : swarm) {
+        	cs.attach(obs);
+        	if (obs instanceof PhotoRover) {
+           		obs.setColor(new Color3f(Color.GREEN));
+        	}
+        	if (obs instanceof ScoutingRover) {
+           		obs.setColor(new Color3f(Color.CYAN));        		
+        	}
+        	if (obs instanceof CarbonRover) {
+           		obs.setColor(new Color3f(Color.GRAY));        		
+        	}       	
+        	env.add(obs);
+        }
+                
+        Simbad frame = new Simbad(env, false);
         frame.update(frame.getGraphics());
+
     }
 
 } 

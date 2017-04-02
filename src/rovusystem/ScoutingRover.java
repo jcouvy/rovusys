@@ -4,22 +4,27 @@
 
 package rovusystem;
 
+import java.awt.Color;
 import java.util.ArrayList;
+
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 public class ScoutingRover extends Rover {
 
     private ArrayList<Coordinate> storage;
 
-    public ScoutingRover() {
-        super();
+    public ScoutingRover(Vector3d pos, String name) {
+        super(pos, name);
         storage = new ArrayList<Coordinate>();
         System.out.println("Creating a new ScoutingRover object");
     }
 
-    public void savePosition() {
+  /*  public void savePosition() {
         storage.add(getPosition());
         System.out.println("Rover ["+getId()+"] found an obstacle at "+getPosition());
-    }
+    }*/
 
     public boolean sendData() {
         return true;
@@ -29,4 +34,39 @@ public class ScoutingRover extends Rover {
         storage.clear();
         System.out.println("Clearing Storage");
     }
+    
+    /** Translate coords **/
+    public Vector3d coords(int x, int y) {
+        return new Vector3d(-y, 0, -x);
+    }
+    
+    private String state;
+    
+    /** This method is called cyclically (20 times per second) by the simulator engine. */
+    @Override
+    public void performBehavior() {
+    	if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+    		this.state = "COLLISION";
+    	} else {
+    		this.state = "SCOUTING";
+    	}
+    	
+    	switch(state) {
+    		case "SCOUTING":
+    			setColor(new Color3f(Color.GREEN));
+    	   		drive();
+                if ((getCounter() % 100) == 0) {
+                    setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
+                }
+                break;
+    		case "COLLISION":
+       			setColor(new Color3f(Color.RED));
+       			avoid();
+             	break;
+    		default:
+    			shutdown();
+    			break;
+    	}
+	}
+ 
 };

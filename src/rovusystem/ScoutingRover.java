@@ -21,10 +21,9 @@ public class ScoutingRover extends Rover {
         System.out.println("Creating a new ScoutingRover object");
     }
 
-  /*  public void savePosition() {
-        storage.add(getPosition());
-        System.out.println("Rover ["+getId()+"] found an obstacle at "+getPosition());
-    }*/
+    public void savePosition() {
+        System.out.println("Rover ["+getName()+"] found an obstacle at "+location());
+    }
 
     public boolean sendData() {
         return true;
@@ -34,39 +33,38 @@ public class ScoutingRover extends Rover {
         storage.clear();
         System.out.println("Clearing Storage");
     }
-    
-    /** Translate coords **/
-    public Vector3d coords(int x, int y) {
-        return new Vector3d(-y, 0, -x);
-    }
-    
-    private String state;
+
     
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {
-    	if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-    		this.state = "COLLISION";
-    	} else {
-    		this.state = "SCOUTING";
+    	update();
+    	if (subject.getRequest() == ERequest.EXPLORE) {
+    	   	if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+        		setState("COLLISION");
+        	} else if (this.getCounter() >= 500) {
+        		setState("ENDING");
+        		missionDone();
+        	} else {
+        		update();
+        	}
+        	
+        	switch(getState()) {
+        		case "SCOUTING":
+        			setColor(new Color3f(Color.CYAN));
+        	   		drive();
+                    if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
+                    break;
+        		case "COLLISION":
+           			setColor(new Color3f(Color.RED));
+           			savePosition();
+           			reverse();
+                 	break;
+        		case "ENDING":
+        			shutdown();
+         			break;
+        		default: break;
+        	}
     	}
-    	
-    	switch(state) {
-    		case "SCOUTING":
-    			setColor(new Color3f(Color.GREEN));
-    	   		drive();
-                if ((getCounter() % 100) == 0) {
-                    setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
-                }
-                break;
-    		case "COLLISION":
-       			setColor(new Color3f(Color.RED));
-       			avoid();
-             	break;
-    		default:
-    			shutdown();
-    			break;
-    	}
-	}
- 
+    }
 };

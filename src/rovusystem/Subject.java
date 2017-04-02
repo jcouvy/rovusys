@@ -9,10 +9,14 @@ import java.util.ArrayList;
 public abstract class Subject {
 
     private ArrayList<Observer> observers = new ArrayList<Observer>();
-    private ERequest request;
+    private ERequest request = ERequest.EXPLORE;
 
     public ERequest getRequest() {
         return request;
+    }
+    
+    public void setRequest(ERequest req) {
+    	request = req;
     }
 
     public void notifyObservers() {

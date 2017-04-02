@@ -31,18 +31,21 @@ public class ExampleMain {
         PhotoRover photo4 = (PhotoRover) rf.createRover("photo", new Vector3d(-.5, 0, 0), "Photo 4");
         photo4.setOrientation(ECardinalDirection.NORTH);
 
-/*        ScoutingRover scout1 = (ScoutingRover) rf.createRover("scouting", env.coords(4, -4), "Scout 1");
+        ScoutingRover scout1 = (ScoutingRover) rf.createRover("scouting", env.coords(4, -4), "Scout 1");
         ScoutingRover scout2 = (ScoutingRover) rf.createRover("scouting", env.coords(4,  4), "Scout 2");
-*/        
+        
+        swarm.clear();
+        
         swarm.add(photo1);
         swarm.add(photo2);
         swarm.add(photo3);
         swarm.add(photo4);
 
-/*        swarm.add(scout1);
+        swarm.add(scout1);
         swarm.add(scout2);
-*/        
+        
         for (Observer obs : swarm) {
+        	obs.subject = cs;
         	cs.attach(obs);
         	if (obs instanceof PhotoRover) {
            		obs.setColor(new Color3f(Color.GREEN));
@@ -58,7 +61,6 @@ public class ExampleMain {
                 
         Simbad frame = new Simbad(env, false);
         frame.update(frame.getGraphics());
-
     }
 
 } 

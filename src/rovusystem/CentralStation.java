@@ -17,7 +17,7 @@ public class CentralStation extends Subject {
     protected boolean isOnline = true;
     private int mapCoverage = 0;
     private ArrayList<Scan> storage = new ArrayList<Scan>();
-    private EEnvironment[][] environment = new EEnvironment[MAP_WIDTH][MAP_HEIGHT];
+    public EEnvironment[][] environment = new EEnvironment[MAP_WIDTH][MAP_HEIGHT];
     //private ArrayList<Coordinate> relevantCoords;
 
     private CentralStation() {
@@ -34,6 +34,10 @@ public class CentralStation extends Subject {
 
     public boolean getStatus() {
         return isOnline;
+    }
+    
+    public EEnvironment[][] getMap() {
+    	return environment;
     }
 
     private void computeRelCoords() {

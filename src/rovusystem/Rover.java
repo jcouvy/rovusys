@@ -11,12 +11,14 @@ import java.util.ArrayList;
 public abstract class Rover extends Observer {
 
 	//private int id;
-	//private Coordinate position;
+	private Coordinate position;
     private int velocity = 1;
     private boolean isOnline = true;
-    private ECardinalDirection orientation;
+    private ECardinalDirection orientation = ECardinalDirection.NORTH;
     private ArrayList<Coordinate> route = new ArrayList<Coordinate>();
 
+    private String state = "IDLE";
+    
     public Rover(Vector3d pos, String name) {
     	super(pos, name);
     }
@@ -33,16 +35,23 @@ public abstract class Rover extends Observer {
     public String getName() {
     	return name;
     }
+    
+    public String getState() {
+    	return state;
+    }
   
-
+    public void setState(String state) {
+    	this.state = state;
+    }
+    
+    public Coordinate getPosition() {
+    	return position;
+    }  
+   
     public void setOrientation(ECardinalDirection ori) {
     	orientation = ori;
     }
-    /*public Coordinate getPosition() {
-    	return position;
-    }
-    */
-    
+     
     public void move(int dist) {
     }
 
@@ -65,15 +74,24 @@ public abstract class Rover extends Observer {
     public boolean sendData() {
         return true;
     }
+    
+    public void missionDone() {
+    	System.out.println("NEXT REQUEST IS: "+subject.getRequest().next());
+    	subject.setRequest(subject.getRequest().next());
+    }
+    
     public void update() {
-        if (subject.getRequest() == ERequest.EXPLORE)
-            System.out.println("Time to map");
-        else if (subject.getRequest() == ERequest.SCAN)
-            System.out.println("time to scan");
-        else if (subject.getRequest() == ERequest.MEASURE)
-            System.out.println("Time to measure");
+        if (subject.getRequest() == ERequest.EXPLORE) {
+            setState("SCOUTING");
+        } 
+        else if (subject.getRequest() == ERequest.SCAN) {
+            setState("SCANNING");
+        }
+        else if (subject.getRequest() == ERequest.MEASURE) {
+            setState("MEASURING");
+        }
         else
-            System.out.println("Cannot do that");
+            setState("IDLE");
     }
 
     /*****************************************************/
@@ -85,6 +103,11 @@ public abstract class Rover extends Observer {
         Point3d loc = new Point3d();
         this.getCoords(loc);
         return loc;
+    }
+    
+    /** Translate coords into Vector3d **/
+    public Vector3d coords(int x, int y) {
+        return new Vector3d(-y, 0, -x);
     }
         
     /** Change the robots direction to the opposite of its current direction */
@@ -101,7 +124,6 @@ public abstract class Rover extends Observer {
     		default: break;
     	}
     	this.rotateY(Math.PI);
-        this.velocity = -velocity;
     }
     
     /** Move the robot straight towards its current direction */
@@ -113,6 +135,11 @@ public abstract class Rover extends Observer {
     public void avoid() {
     	this.setTranslationalVelocity(0);
     	setRotationalVelocity(Math.PI / 2);
+    }
+    
+    /** Timer to repeat actions every sec seconds **/
+    public boolean timer(int sec) {
+    	return this.getCounter() % sec == 0;
     }
         
     /** This method is called by the simulator engine on reset. */
@@ -127,8 +154,6 @@ public abstract class Rover extends Observer {
 			case SOUTH: break;
 			default: break;
 	    }
-        
-        drive();
     }    
     
 };

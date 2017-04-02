@@ -22,18 +22,27 @@ public class ExampleMain {
         RoverFactory rf = new RoverFactory();
         ArrayList<Rover> swarm = new ArrayList<Rover>();
         
-        PhotoRover photo1 = (PhotoRover) rf.createRover("photo", new Vector3d(0, 0, .5), "Photo 1"); 
+        PhotoRover photo1 = (PhotoRover) rf.createRover("photo", env.coords(-9, -9), "Photo 1"); 
         photo1.setOrientation(ECardinalDirection.WEST);
-        PhotoRover photo2 = (PhotoRover) rf.createRover("photo", new Vector3d(.5, 0, 0), "Photo 2");
+        PhotoRover photo2 = (PhotoRover) rf.createRover("photo", env.coords(-9, -8), "Photo 2");
         photo2.setOrientation(ECardinalDirection.SOUTH);
-        PhotoRover photo3 = (PhotoRover) rf.createRover("photo", new Vector3d(0, 0, -.5), "Photo 3");
+        PhotoRover photo3 = (PhotoRover) rf.createRover("photo", env.coords(-9, -7), "Photo 3");
         photo3.setOrientation(ECardinalDirection.EAST);
-        PhotoRover photo4 = (PhotoRover) rf.createRover("photo", new Vector3d(-.5, 0, 0), "Photo 4");
+        PhotoRover photo4 = (PhotoRover) rf.createRover("photo", env.coords(-9, -6), "Photo 4");
         photo4.setOrientation(ECardinalDirection.NORTH);
 
-        ScoutingRover scout1 = (ScoutingRover) rf.createRover("scouting", env.coords(4, -4), "Scout 1");
-        ScoutingRover scout2 = (ScoutingRover) rf.createRover("scouting", env.coords(4,  4), "Scout 2");
-        
+        ScoutingRover scout1 = (ScoutingRover) rf.createRover("scouting", env.coords(9,-9), "Scout 1");
+        ScoutingRover scout2 = (ScoutingRover) rf.createRover("scouting", env.coords(9, 9), "Scout 2");
+
+/*        CarbonRover carbon1 = (CarbonRover) rf.createRover("carbon", new Vector3d(0, 0, .5), "Carbon 1"); 
+        carbon1.setOrientation(ECardinalDirection.WEST);
+        CarbonRover carbon2 = (CarbonRover) rf.createRover("carbon", new Vector3d(.5, 0, 0), "Carbon 2");
+        carbon2.setOrientation(ECardinalDirection.SOUTH);
+        CarbonRover carbon3 = (CarbonRover) rf.createRover("carbon", new Vector3d(0, 0, -.5), "Carbon 3");
+        carbon3.setOrientation(ECardinalDirection.EAST);
+        CarbonRover carbon4 = (CarbonRover) rf.createRover("carbon", new Vector3d(-.5, 0, 0), "Carbon 4");
+        carbon4.setOrientation(ECardinalDirection.NORTH);
+*/
         swarm.clear();
         
         swarm.add(photo1);
@@ -43,7 +52,12 @@ public class ExampleMain {
 
         swarm.add(scout1);
         swarm.add(scout2);
-        
+
+/*        swarm.add(carbon1);
+        swarm.add(carbon2);
+        swarm.add(carbon3);
+        swarm.add(carbon4);
+*/        
         for (Observer obs : swarm) {
         	obs.subject = cs;
         	cs.attach(obs);
@@ -54,13 +68,14 @@ public class ExampleMain {
            		obs.setColor(new Color3f(Color.CYAN));        		
         	}
         	if (obs instanceof CarbonRover) {
-           		obs.setColor(new Color3f(Color.GRAY));        		
+           		obs.setColor(new Color3f(Color.DARK_GRAY));        		
         	}       	
         	env.add(obs);
         }
                 
         Simbad frame = new Simbad(env, false);
         frame.update(frame.getGraphics());
+        
     }
 
 } 

@@ -53,4 +53,13 @@ public class CentralStation extends Subject {
             System.out.println("Minimum coverage requirement fulfilled.");
         }
     }
+    
+//    private void missionDone() {
+//        while (true) {
+//        	for (Rover rov : observers) {
+//        		if (rov instanceof ScoutingRover && rov.getState() != "ENDING") {
+//        			return false;
+//        		} return true;
+//
+//    }
 };

@@ -8,8 +8,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
+
+import simbad.sim.RobotFactory;
 
 public class ScoutingRover extends Rover {
 
@@ -19,6 +20,8 @@ public class ScoutingRover extends Rover {
         super(pos, name);
         storage = new ArrayList<Coordinate>();
         System.out.println("Creating a new ScoutingRover object");
+        
+        RobotFactory.addBumperBeltSensor(this, 12);
     }
 
     public void savePosition() {
@@ -26,7 +29,8 @@ public class ScoutingRover extends Rover {
     }
 
     public boolean sendData() {
-        return true;
+	   System.out.println("Sending data to " + subject.toString());
+	   return true;
     }
 
     public void freeStorage() {
@@ -37,19 +41,16 @@ public class ScoutingRover extends Rover {
     
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
-    public void performBehavior() {
-    	update();
+    public void performBehavior() {    	
+    	
     	if (subject.getRequest() == ERequest.EXPLORE) {
-    	   	if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+    		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
         		setState("COLLISION");
-        	} else if (this.getCounter() >= 500) {
-        		setState("ENDING");
-        		missionDone();
         	} else {
         		update();
         	}
-        	
-        	switch(getState()) {
+
+    	   	switch(getState()) {
         		case "SCOUTING":
         			setColor(new Color3f(Color.CYAN));
         	   		drive();
@@ -57,11 +58,11 @@ public class ScoutingRover extends Rover {
                     break;
         		case "COLLISION":
            			setColor(new Color3f(Color.RED));
-           			savePosition();
+           			savePosition(); sendData();
            			reverse();
                  	break;
         		case "ENDING":
-        			shutdown();
+             		shutdown();
          			break;
         		default: break;
         	}

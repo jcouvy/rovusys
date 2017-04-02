@@ -8,8 +8,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
+
+import simbad.sim.RobotFactory;
 
 public class PhotoRover extends Rover {
 
@@ -19,14 +20,19 @@ public class PhotoRover extends Rover {
         super(pos, name);
         storage = new ArrayList<Scan>();
         System.out.println("Creating a new PhotoRover object");
+        
+        RobotFactory.addCameraSensor(this);
     }
 
     public void scanPosition() {
-        System.out.println("Rover ["+getName()+"] scanning "+location());
+    	for (int i=0 ; i<4 ; i++)
+    		this.rotateY(Math.PI / 2);
+		System.out.println("Rover ["+getName()+"] scanned "+location());
     }
 
-   public boolean sendData() {
-        return true;
+    public boolean sendData() {
+	   System.out.println("Sending data to " + subject.toString());
+	   return true;
     }
  
     public void freeStorage() {
@@ -34,12 +40,11 @@ public class PhotoRover extends Rover {
         System.out.println("Clearing storage");
     }
     
-
     
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {
-		update();		
+
 		if (subject.getRequest() == ERequest.SCAN) {		
 			if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
 	    		setState("COLLISION");
@@ -51,7 +56,7 @@ public class PhotoRover extends Rover {
 	    		case "SCANNING":
 	    			setColor(new Color3f(Color.GREEN));
 	    	   		drive();
-	    	   		if (timer(5)) scanPosition();
+	    	   		if (timer(5)) scanPosition(); sendData();
 	                if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
 	                break;
 	    		case "COLLISION":

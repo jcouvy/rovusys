@@ -65,7 +65,6 @@ public abstract class Rover extends Observer {
 
     public void shutdown() {
         isOnline = false;
-        this.moveToStartPosition();
         this.detach();
     }
 

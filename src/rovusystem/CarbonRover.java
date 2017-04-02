@@ -25,7 +25,7 @@ public class CarbonRover extends Rover {
     }
 
    public boolean sendData() {
-	   System.out.println("Sending data to " + subject.toString());
+	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
        return true;
     }
  
@@ -34,32 +34,44 @@ public class CarbonRover extends Rover {
         System.out.println("Clearing storage");
     }
     
+    public void update() {
+    	if (getState() == "FINAL") return;
+        if (subject.getRequest() == ERequest.MEASURE) {
+            setState("MEASURING");
+        }
+    }
+    
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {
 		
-		if (subject.getRequest() == ERequest.MEASURE) {		
-			if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-	    		setState("COLLISION");
-	    	} else {
-	    		update();
-	    	}
+    	if (getState() != "IDLE" & getState() != "FINAL") {
+    		
+    		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+        		setState("COLLISION");
+        	}
+    		
+    		if (this.getCounter() >= 1500) {
+    			setState("ENDING");
+    		}
 	    	
 	    	switch(getState()) {
 	    		case "MEASURING":
-	    			setColor(new Color3f(Color.DARK_GRAY));
+	    			setColor(new Color3f(Color.PINK));
 	    	   		drive();
-	    	   		if (timer(5)) measurePosition(); sendData();
+	    	   		if (timer(5)) measurePosition();;
 	                if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
 	                break;
 	    		case "COLLISION":
 	       			setColor(new Color3f(Color.RED));
 	       			avoid();
+	       			setState("MEASURING");
 	             	break;
 	    		case "ENDING":
 	    			shutdown();
 	    			break;
-	    		default: break;
+	    		case "FINAL":
+	    			break;
 	    	}
 		}
 	}

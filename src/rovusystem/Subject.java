@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public abstract class Subject {
 
     private ArrayList<Observer> observers = new ArrayList<Observer>();
-    private ERequest request = ERequest.EXPLORE;
+    private ERequest request;
 
     public ERequest getRequest() {
         return request;

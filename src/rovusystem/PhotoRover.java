@@ -25,13 +25,13 @@ public class PhotoRover extends Rover {
     }
 
     public void scanPosition() {
-    	for (int i=0 ; i<4 ; i++)
-    		this.rotateY(Math.PI / 2);
+    	this.setRotationalVelocity(0);
+    	this.setTranslationalVelocity(0);
 		System.out.println("Rover ["+getName()+"] scanned "+location());
     }
 
     public boolean sendData() {
-	   System.out.println("Sending data to " + subject.toString());
+	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
 	   return true;
     }
  
@@ -40,33 +40,44 @@ public class PhotoRover extends Rover {
         System.out.println("Clearing storage");
     }
     
+    public void update() {
+    	if (getState() == "FINAL") return;
+        if (subject.getRequest() == ERequest.SCAN) {
+            setState("SCANNING");
+        }
+    }
     
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {
 
-		if (subject.getRequest() == ERequest.SCAN) {		
-			if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-	    		setState("COLLISION");
-	    	} else {
-	    		update();
-	    	}
-	    	
+    	if (getState() != "IDLE" & getState() != "FINAL") {
+    		
+    		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+        		setState("COLLISION");
+        	}
+    		
+    		if (this.getCounter() >= 1000) {
+    			setState("ENDING");
+    		}
+    		
 	    	switch(getState()) {
 	    		case "SCANNING":
 	    			setColor(new Color3f(Color.GREEN));
 	    	   		drive();
-	    	   		if (timer(5)) scanPosition(); sendData();
+	    	   		if (timer(5)) scanPosition();
 	                if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
 	                break;
 	    		case "COLLISION":
 	       			setColor(new Color3f(Color.RED));
 	       			avoid();
+	       			setState("SCANNING");
 	             	break;
 	    		case "ENDING":
 	    			shutdown();
 	    			break;
-	    		default: break;
+	    		case "FINAL":
+	    			break;
 	    	}
 		}
 	}

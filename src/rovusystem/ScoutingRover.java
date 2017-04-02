@@ -29,7 +29,7 @@ public class ScoutingRover extends Rover {
     }
 
     public boolean sendData() {
-	   System.out.println("Sending data to " + subject.toString());
+ 	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
 	   return true;
     }
 
@@ -38,20 +38,29 @@ public class ScoutingRover extends Rover {
         System.out.println("Clearing Storage");
     }
 
+    public void update() {
+    	if (getState() == "FINAL") return;
+        if (subject.getRequest() == ERequest.EXPLORE) {
+            setState("SCOUTING");      
+        }
+    }
     
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {    	
     	
-    	if (subject.getRequest() == ERequest.EXPLORE) {
+    	if (getState() != "IDLE" & getState() != "FINAL") {
+    		
     		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
         		setState("COLLISION");
-        	} else {
-        		update();
         	}
-
+    		
+    		if (this.getCounter() >= 500) {
+    			setState("ENDING");
+    		}
+    		
     	   	switch(getState()) {
-        		case "SCOUTING":
+	    	   	case "SCOUTING":
         			setColor(new Color3f(Color.CYAN));
         	   		drive();
                     if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
@@ -60,11 +69,13 @@ public class ScoutingRover extends Rover {
            			setColor(new Color3f(Color.RED));
            			savePosition(); sendData();
            			reverse();
+           			setState("SCOUTING");
                  	break;
         		case "ENDING":
              		shutdown();
          			break;
-        		default: break;
+        		case "FINAL":
+        			break;
         	}
     	}
     }

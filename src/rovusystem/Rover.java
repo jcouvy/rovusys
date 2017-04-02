@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public abstract class Rover extends Observer {
 
-	//private int id;
+	private int id;
 	private Coordinate position;
     private int velocity = 1;
     private boolean isOnline = true;
@@ -23,10 +23,13 @@ public abstract class Rover extends Observer {
     	super(pos, name);
     }
     
-    /*public int getId() {
+    public int getId() {
     	return id;
     }
-    */
+    
+    public Coordinate getPosition() {
+    	return position;
+    }
     
     public ECardinalDirection getOrientation() {
     	return orientation;
@@ -43,10 +46,6 @@ public abstract class Rover extends Observer {
     public void setState(String state) {
     	this.state = state;
     }
-    
-    public Coordinate getPosition() {
-    	return position;
-    }  
    
     public void setOrientation(ECardinalDirection ori) {
     	orientation = ori;
@@ -65,21 +64,25 @@ public abstract class Rover extends Observer {
 
     public void shutdown() {
         isOnline = false;
-        this.detach();
+        this.resetPosition();
+        this.getCanBeTraversed();
+        this.setState("FINAL");
+        System.out.println("Rover ["+getName()+"] - Mission DONE");
     }
 
     public abstract void freeStorage();
 
     public boolean sendData() {
-        return true;
-    }
+ 	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
+       return true;
+     }
     
     public void missionDone() {
     	System.out.println("NEXT REQUEST IS: "+subject.getRequest().next());
     	subject.setRequest(subject.getRequest().next());
     }
     
-    public void update() {
+/*    public void update() {
         if (subject.getRequest() == ERequest.EXPLORE) {
             setState("SCOUTING");
         } 
@@ -89,9 +92,7 @@ public abstract class Rover extends Observer {
         else if (subject.getRequest() == ERequest.MEASURE) {
             setState("MEASURING");
         }
-        else
-            setState("IDLE");
-    }
+    }*/
 
     /*****************************************************/
     /** Methods to adapt our implementation with Simbad **/

@@ -11,6 +11,10 @@ public abstract class Subject {
     private ArrayList<Observer> observers = new ArrayList<Observer>();
     private ERequest request;
 
+    public Subject() {
+    	request = ERequest.EXPLORE;
+    }
+    
     public ERequest getRequest() {
         return request;
     }

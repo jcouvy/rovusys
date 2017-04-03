@@ -41,44 +41,52 @@ public class PhotoRover extends Rover {
     }
     
     public void update() {
+    	super.update();
     	if (getState() == "FINAL") return;
         if (subject.getRequest() == ERequest.SCAN) {
             setState("SCANNING");
         }
     }
     
+    public void missionDone() {
+    	super.missionDone();
+    	subject.setRequest(ERequest.MEASURE);
+    	subject.notifyObservers();
+    }
+    
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {
-
-    	if (getState() != "IDLE" & getState() != "FINAL") {
     		
-    		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-        		setState("COLLISION");
-        	}
-    		
-    		if (this.getCounter() >= 1000) {
-    			setState("ENDING");
-    		}
-    		
-	    	switch(getState()) {
-	    		case "SCANNING":
-	    			setColor(new Color3f(Color.GREEN));
-	    	   		drive();
-	    	   		if (timer(5)) scanPosition();
-	                if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
-	                break;
-	    		case "COLLISION":
-	       			setColor(new Color3f(Color.RED));
-	       			avoid();
-	       			setState("SCANNING");
-	             	break;
-	    		case "ENDING":
-	    			shutdown();
-	    			break;
-	    		case "FINAL":
-	    			break;
-	    	}
+		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+    		setState("COLLISION");
+    	}
+		
+		if (this.getCounter() >= 1000 & getState() != "FINAL") {
+			setState("ENDING");
 		}
-	}
+    		
+		switch(getState()) {
+			case "IDLE" :
+				break;	
+			case "SCANNING":
+				setColor(new Color3f(Color.GREEN));
+				drive();
+				if (timer(5)) scanPosition();
+				if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
+				break;
+			case "COLLISION":
+				setColor(new Color3f(Color.RED));
+				avoid();
+				setState("SCANNING");
+				break;
+			case "ENDING":
+				setColor(new Color3f(Color.GREEN));
+				shutdown();
+				missionDone();
+				break;
+			case "FINAL":
+				return;
+		}
+    }
 };

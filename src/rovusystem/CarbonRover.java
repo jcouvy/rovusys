@@ -21,6 +21,8 @@ public class CarbonRover extends Rover {
     }
 
     public void measurePosition() {
+    	this.setRotationalVelocity(0);
+    	this.setTranslationalVelocity(0);
         System.out.println("Rover ["+getName()+"] measured "+location());
     }
 
@@ -35,44 +37,46 @@ public class CarbonRover extends Rover {
     }
     
     public void update() {
+    	super.update();
     	if (getState() == "FINAL") return;
         if (subject.getRequest() == ERequest.MEASURE) {
             setState("MEASURING");
         }
     }
-    
+        
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
     public void performBehavior() {
 		
-    	if (getState() != "IDLE" & getState() != "FINAL") {
+		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+    		setState("COLLISION");
+    	}
+		
+		if (this.getCounter() >= 1500 & getState() != "FINAL") {
+			setState("ENDING");
+		}
     		
-    		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-        		setState("COLLISION");
-        	}
-    		
-    		if (this.getCounter() >= 1500) {
-    			setState("ENDING");
-    		}
-	    	
-	    	switch(getState()) {
-	    		case "MEASURING":
-	    			setColor(new Color3f(Color.PINK));
-	    	   		drive();
-	    	   		if (timer(5)) measurePosition();;
-	                if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
-	                break;
-	    		case "COLLISION":
-	       			setColor(new Color3f(Color.RED));
-	       			avoid();
-	       			setState("MEASURING");
-	             	break;
-	    		case "ENDING":
-	    			shutdown();
-	    			break;
-	    		case "FINAL":
-	    			break;
-	    	}
+		switch(getState()) {
+			case "IDLE" :
+				break;	
+			case "MEASURING":
+				setColor(new Color3f(Color.PINK));
+				drive();
+				if (timer(5)) measurePosition();
+				if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
+				break;
+			case "COLLISION":
+				setColor(new Color3f(Color.RED));
+				avoid();
+				setState("MEASURING");
+				break;
+			case "ENDING":
+				setColor(new Color3f(Color.PINK));
+				shutdown();
+				missionDone();
+				break;
+			case "FINAL":
+				return;
 		}
 	}
 };

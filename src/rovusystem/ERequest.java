@@ -8,9 +8,4 @@ public enum ERequest {
     EXPLORE,
     SCAN,
     MEASURE;
-	
-	private static ERequest[] vals = values();
-    public ERequest next() {
-        return vals[(this.ordinal()+1) % vals.length];
-    }
 };

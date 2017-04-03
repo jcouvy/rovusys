@@ -14,18 +14,15 @@ public class CentralStation extends Subject {
 
     private static CentralStation instance = new CentralStation();
 
-    protected boolean isOnline = true;
-    private int mapCoverage = 0;
-    private ArrayList<Scan> storage = new ArrayList<Scan>();
+    protected boolean isOnline;
+//    private int mapCoverage;
+  /*  private ArrayList<Scan> storage = new ArrayList<Scan>();
     public EEnvironment[][] environment = new EEnvironment[MAP_WIDTH][MAP_HEIGHT];
-    //private ArrayList<Coordinate> relevantCoords;
+  */  //private ArrayList<Coordinate> relevantCoords;
 
     private CentralStation() {
-        for (int i=0 ; i<MAP_WIDTH ; ++i) {
-            for (int j=0 ; j<MAP_WIDTH ; j++) {
-                environment[i][j] = EEnvironment.UNEXPLORED;
-            }
-        }
+    	super();
+    	isOnline = true;
     }
 
     public static CentralStation getInstance() {
@@ -36,9 +33,9 @@ public class CentralStation extends Subject {
         return isOnline;
     }
     
-    public EEnvironment[][] getMap() {
+ /*   public EEnvironment[][] getMap() {
     	return environment;
-    }
+    }*/
 
     private void computeRelCoords() {
     }
@@ -48,11 +45,12 @@ public class CentralStation extends Subject {
         return route;
     }
 
-    private void checkCoverage() {
+/*    private void checkCoverage() {
         if (mapCoverage >= MIN_COVERAGE) {
             System.out.println("Minimum coverage requirement fulfilled.");
         }
-    }
+    }*/
+    
     
 //    private void missionDone() {
 //        while (true) {

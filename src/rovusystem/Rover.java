@@ -67,7 +67,6 @@ public abstract class Rover extends Observer {
         this.resetPosition();
         this.getCanBeTraversed();
         this.setState("FINAL");
-        System.out.println("Rover ["+getName()+"] - Mission DONE");
     }
 
     public abstract void freeStorage();
@@ -77,10 +76,14 @@ public abstract class Rover extends Observer {
        return true;
      }
     
+    public void update() {
+   	   System.out.println("Rover ["+getName()+"] has been notified "+subject.getRequest());
+     }
+    
     public void missionDone() {
-    	System.out.println("NEXT REQUEST IS: "+subject.getRequest().next());
-    	subject.setRequest(subject.getRequest().next());
+  	   System.out.println("Rover ["+getName()+"] -- Mission Done");
     }
+    
     
 /*    public void update() {
         if (subject.getRequest() == ERequest.EXPLORE) {

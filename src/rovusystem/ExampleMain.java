@@ -80,28 +80,30 @@ public class ExampleMain {
         System.out.println("----- MISSION START ------");
         cs.setRequest(ERequest.EXPLORE);
         cs.notifyObservers();
-        System.out.println("----- Request: EXPLORE -----");
-        
-        for (;;) {
-        	System.out.println(scout1.getState());
-        	if (scout1.getState() == "FINAL" & scout2.getState() == "FINAL") {
-        	       cs.setRequest(ERequest.SCAN);
-        	       cs.notifyObservers();
-        	       break;
-        	}
-        }
-        System.out.println("----- Request: SCAN -----");
-        
-        for (;;) {
-        	System.out.println(photo1.getState());
-        	if (photo1.getState() == "FINAL" & photo2.getState() == "FINAL"
-        		& photo3.getState() == "FINAL" & photo4.getState() == "FINAL") {
-        	       cs.setRequest(ERequest.MEASURE);
-        	       cs.notifyObservers();
-        	       break;
-        	}
-        }
-        System.out.println("----- Request: MEASURE -----");
+//        System.out.println("----- Request: EXPLORE -----");
+//        
+//        int i=0;
+//        while (cs.getRequest() == ERequest.EXPLORE) {
+//        	if (scout1.getState() == "FINAL" & scout2.getState() == "FINAL") {
+//        	       cs.setRequest(ERequest.SCAN);
+//        	       cs.notifyObservers();
+//        	       break;
+//        	}
+//        	i++;
+//        	if (i%100 == 0)
+//        		System.out.println(cs.getRequest());
+//        }
+//
+//        System.out.println("----- Request: SCAN -----");
+//        
+//        while (cs.getRequest() == ERequest.SCAN) {
+//        	if (photo1.getState() == "FINAL" & photo2.getState() == "FINAL" & photo3.getState() == "FINAL" & photo4.getState() == "FINAL") {
+//            	       cs.setRequest(ERequest.MEASURE);
+//            	       cs.notifyObservers();
+//            	       break;
+//        	}
+//        }
+//        System.out.println("----- Request: MEASURE -----");
 
         
     }

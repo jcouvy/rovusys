@@ -39,44 +39,54 @@ public class ScoutingRover extends Rover {
     }
 
     public void update() {
+    	super.update();
     	if (getState() == "FINAL") return;
         if (subject.getRequest() == ERequest.EXPLORE) {
             setState("SCOUTING");      
         }
     }
     
+    public void missionDone() {
+    	super.missionDone();
+    	subject.setRequest(ERequest.SCAN);
+    	subject.notifyObservers();
+    }
+    
     /** This method is called cyclically (20 times per second) by the simulator engine. */
     @Override
-    public void performBehavior() {    	
+    public void performBehavior() {
     	
-    	if (getState() != "IDLE" & getState() != "FINAL") {
-    		
-    		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-        		setState("COLLISION");
-        	}
-    		
-    		if (this.getCounter() >= 500) {
-    			setState("ENDING");
-    		}
-    		
-    	   	switch(getState()) {
-	    	   	case "SCOUTING":
-        			setColor(new Color3f(Color.CYAN));
-        	   		drive();
-                    if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
-                    break;
-        		case "COLLISION":
-           			setColor(new Color3f(Color.RED));
-           			savePosition(); sendData();
-           			reverse();
-           			setState("SCOUTING");
-                 	break;
-        		case "ENDING":
-             		shutdown();
-         			break;
-        		case "FINAL":
-        			break;
-        	}
+		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+    		setState("COLLISION");
     	}
+		
+		if (this.getCounter() == 500) {
+			setState("ENDING");
+		}
+		
+		switch(getState()) {
+			case "IDLE" :
+				break;
+			case "SCOUTING":
+				setColor(new Color3f(Color.CYAN));
+				drive();
+				if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
+				break;
+			case "COLLISION":
+				setColor(new Color3f(Color.RED));
+				savePosition(); sendData();
+				reverse();
+				setState("SCOUTING");
+				break;
+			case "ENDING":
+				setColor(new Color3f(Color.CYAN));
+				shutdown();
+				missionDone();
+//				subject.setRequest(ERequest.SCAN);
+//				subject.notifyObservers();
+				break;
+			case "FINAL":
+				return;
+		}
     }
 };

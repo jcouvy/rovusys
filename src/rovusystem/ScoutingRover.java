@@ -14,30 +14,42 @@ import simbad.sim.RobotFactory;
 
 public class ScoutingRover extends Rover {
 
-    private ArrayList<Coordinate> storage;
+	/** The storage should be an ArrayList<Coordinate>, for the sake of
+	 *  simplicity it will Strings instead. Otherwise it would require
+	 *  to create a Coordinate from a Vec3d.
+	 */
+    private ArrayList<String> storage;
 
     public ScoutingRover(Vector3d pos, String name) {
         super(pos, name);
-        storage = new ArrayList<Coordinate>();
+        storage = new ArrayList<String>();
         System.out.println("Creating a new ScoutingRover object");
         
         RobotFactory.addBumperBeltSensor(this, 12);
     }
 
+    /** Inform that the Rover found an obstacle and locate where. 
+     *  If the storage is full (ie. size is 100 in our impl)
+     *  then the rover clears it.
+     */
     public void savePosition() {
-        System.out.println("Rover ["+getName()+"] found an obstacle at "+location());
+    	// Storage is 3 to show the behavior in the simulation video.
+    	if (storage.size() == 3) freeStorage();
+    	String pos = new String("Rover ["+getName()+"] found an obstacle at "+location());
+    	storage.add(pos);
+        System.out.println(pos);
     }
 
-    public boolean sendData() {
- 	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
-	   return true;
-    }
-
+    /** Empty the storage **/
     public void freeStorage() {
         storage.clear();
-        System.out.println("Clearing Storage");
+        System.out.println("Rover ["+getName()+"] has cleared storage");
     }
 
+    /** Informs that the Rover is updating,
+     *  Changes its State from IDLE to SCOUTING(active) if the request is EXPLORE
+     *  If the state is FINAL, the rover does nothing (same as state-chart)
+     */
     public void update() {
     	super.update();
     	if (getState() == "FINAL") return;
@@ -46,23 +58,28 @@ public class ScoutingRover extends Rover {
         }
     }
     
+    /** Informs that the Rover's mission is complete,
+     *  the Central Station goes to its next request
+     */
     public void missionDone() {
     	super.missionDone();
     	subject.setRequest(ERequest.SCAN);
     	subject.notifyObservers();
     }
     
-    /** This method is called cyclically (20 times per second) by the simulator engine. */
+    /** This method is called cyclically (20 times per second) by the simulator engine. **/
     @Override
     public void performBehavior() {
     	
-		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-    		setState("COLLISION");
+		if (getState() != "FINAL") {
+			if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+	    		setState("COLLISION");
+			}
+			// We consider that the rover has finished his work when the counter hits 500 (easier sim).
+			if (this.getCounter() == 500) {
+				setState("ENDING");
+			}
     	}
-		
-		if (this.getCounter() == 500) {
-			setState("ENDING");
-		}
 		
 		switch(getState()) {
 			case "IDLE" :
@@ -74,7 +91,8 @@ public class ScoutingRover extends Rover {
 				break;
 			case "COLLISION":
 				setColor(new Color3f(Color.RED));
-				savePosition(); sendData();
+				if (storage.size() == 3) sendData();
+				savePosition();
 				reverse();
 				setState("SCOUTING");
 				break;
@@ -82,8 +100,6 @@ public class ScoutingRover extends Rover {
 				setColor(new Color3f(Color.CYAN));
 				shutdown();
 				missionDone();
-//				subject.setRequest(ERequest.SCAN);
-//				subject.notifyObservers();
 				break;
 			case "FINAL":
 				return;

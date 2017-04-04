@@ -8,21 +8,21 @@ import java.util.ArrayList;
 
 public class CentralStation extends Subject {
 
-	private static final int MAP_WIDTH = 100;
-	private static final int MAP_HEIGHT = 100;
-	private static final int MIN_COVERAGE = 80;
+	private final int MIN_COVERAGE = 80;
 
     private static CentralStation instance = new CentralStation();
 
     protected boolean isOnline;
-//    private int mapCoverage;
-  /*  private ArrayList<Scan> storage = new ArrayList<Scan>();
-    public EEnvironment[][] environment = new EEnvironment[MAP_WIDTH][MAP_HEIGHT];
-  */  //private ArrayList<Coordinate> relevantCoords;
+    private int mapCoverage;
+    private int storage;
+    public EEnvironment[][] environment;
+    private ArrayList<Coordinate> relevantCoords;
 
     private CentralStation() {
     	super();
     	isOnline = true;
+    	mapCoverage = 0;
+    	storage = 0;
     }
 
     public static CentralStation getInstance() {
@@ -33,9 +33,13 @@ public class CentralStation extends Subject {
         return isOnline;
     }
     
- /*   public EEnvironment[][] getMap() {
+    /** These operations map 1 to 1 with the Class Diagram
+     *  but they don't fit in the Simbad simulation. We will alter
+     *  our system for the sake of the sim.
+     */
+    public EEnvironment[][] getMap() {
     	return environment;
-    }*/
+    }
 
     private void computeRelCoords() {
     }
@@ -45,19 +49,10 @@ public class CentralStation extends Subject {
         return route;
     }
 
-/*    private void checkCoverage() {
+    private void checkCoverage() {
         if (mapCoverage >= MIN_COVERAGE) {
             System.out.println("Minimum coverage requirement fulfilled.");
         }
-    }*/
+    }
     
-    
-//    private void missionDone() {
-//        while (true) {
-//        	for (Rover rov : observers) {
-//        		if (rov instanceof ScoutingRover && rov.getState() != "ENDING") {
-//        			return false;
-//        		} return true;
-//
-//    }
 };

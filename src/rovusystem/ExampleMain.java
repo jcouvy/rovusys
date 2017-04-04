@@ -18,29 +18,29 @@ public class ExampleMain {
         
         ExampleEnvironment env = new ExampleEnvironment();        
 
-        CentralStation cs = CentralStation.getInstance();
+        CentralStation cs = CentralStation.getInstance(); // Singleton Design Pattern
         RoverFactory rf = new RoverFactory();
         ArrayList<Rover> swarm = new ArrayList<Rover>();
         
-        PhotoRover photo1 = (PhotoRover) rf.createRover("photo", env.coords(-9, -9), "Photo 1"); 
+        PhotoRover photo1 = (PhotoRover) rf.createRover("photo", env.coords(-1, -1), "Photo 1"); 
+        PhotoRover photo2 = (PhotoRover) rf.createRover("photo", env.coords( 1,  1), "Photo 2");
+        PhotoRover photo3 = (PhotoRover) rf.createRover("photo", env.coords( 1, -1), "Photo 3");
+        PhotoRover photo4 = (PhotoRover) rf.createRover("photo", env.coords(-1,  1), "Photo 4");
         photo1.setOrientation(ECardinalDirection.WEST);
-        PhotoRover photo2 = (PhotoRover) rf.createRover("photo", env.coords(-9, -8), "Photo 2");
         photo2.setOrientation(ECardinalDirection.SOUTH);
-        PhotoRover photo3 = (PhotoRover) rf.createRover("photo", env.coords(-9, -7), "Photo 3");
         photo3.setOrientation(ECardinalDirection.EAST);
-        PhotoRover photo4 = (PhotoRover) rf.createRover("photo", env.coords(-9, -6), "Photo 4");
         photo4.setOrientation(ECardinalDirection.NORTH);
 
         ScoutingRover scout1 = (ScoutingRover) rf.createRover("scouting", env.coords(9,-9), "Scout 1");
         ScoutingRover scout2 = (ScoutingRover) rf.createRover("scouting", env.coords(9, 9), "Scout 2");
 
         CarbonRover carbon1 = (CarbonRover) rf.createRover("carbon", new Vector3d(0, 0, .5), "Carbon 1"); 
-        carbon1.setOrientation(ECardinalDirection.WEST);
         CarbonRover carbon2 = (CarbonRover) rf.createRover("carbon", new Vector3d(.5, 0, 0), "Carbon 2");
-        carbon2.setOrientation(ECardinalDirection.SOUTH);
         CarbonRover carbon3 = (CarbonRover) rf.createRover("carbon", new Vector3d(0, 0, -.5), "Carbon 3");
-        carbon3.setOrientation(ECardinalDirection.EAST);
         CarbonRover carbon4 = (CarbonRover) rf.createRover("carbon", new Vector3d(-.5, 0, 0), "Carbon 4");
+        carbon1.setOrientation(ECardinalDirection.WEST);
+        carbon2.setOrientation(ECardinalDirection.SOUTH);
+        carbon3.setOrientation(ECardinalDirection.EAST);
         carbon4.setOrientation(ECardinalDirection.NORTH);
 
         swarm.clear();
@@ -68,7 +68,7 @@ public class ExampleMain {
            		obs.setColor(new Color3f(Color.CYAN));        		
         	}
         	else if (obs instanceof CarbonRover) {
-           		obs.setColor(new Color3f(Color.PINK));
+           		obs.setColor(new Color3f(Color.WHITE));
         	}       	
         	env.add(obs);
         }
@@ -80,32 +80,6 @@ public class ExampleMain {
         System.out.println("----- MISSION START ------");
         cs.setRequest(ERequest.EXPLORE);
         cs.notifyObservers();
-//        System.out.println("----- Request: EXPLORE -----");
-//        
-//        int i=0;
-//        while (cs.getRequest() == ERequest.EXPLORE) {
-//        	if (scout1.getState() == "FINAL" & scout2.getState() == "FINAL") {
-//        	       cs.setRequest(ERequest.SCAN);
-//        	       cs.notifyObservers();
-//        	       break;
-//        	}
-//        	i++;
-//        	if (i%100 == 0)
-//        		System.out.println(cs.getRequest());
-//        }
-//
-//        System.out.println("----- Request: SCAN -----");
-//        
-//        while (cs.getRequest() == ERequest.SCAN) {
-//        	if (photo1.getState() == "FINAL" & photo2.getState() == "FINAL" & photo3.getState() == "FINAL" & photo4.getState() == "FINAL") {
-//            	       cs.setRequest(ERequest.MEASURE);
-//            	       cs.notifyObservers();
-//            	       break;
-//        	}
-//        }
-//        System.out.println("----- Request: MEASURE -----");
-
-        
     }
 
 } 

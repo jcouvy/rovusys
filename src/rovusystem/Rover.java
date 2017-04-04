@@ -12,15 +12,19 @@ public abstract class Rover extends Observer {
 
 	private int id;
 	private Coordinate position;
-    private int velocity = 1;
-    private boolean isOnline = true;
-    private ECardinalDirection orientation = ECardinalDirection.NORTH;
+    private boolean isOnline;
+    private ECardinalDirection orientation;
     private ArrayList<Coordinate> route = new ArrayList<Coordinate>();
 
+    private int velocity = 1;
     private String state = "IDLE";
+    
+    public abstract void freeStorage();
     
     public Rover(Vector3d pos, String name) {
     	super(pos, name);
+    	isOnline = true;
+    	orientation = ECardinalDirection.NORTH;
     }
     
     public int getId() {
@@ -50,53 +54,48 @@ public abstract class Rover extends Observer {
     public void setOrientation(ECardinalDirection ori) {
     	orientation = ori;
     }
-     
+    
+    /** When shut down, a Rover moves to its FINAL state
+     *  It is set back to its original location and cannot collide anymore 
+     *  (for the sake of the simulation)
+     */
+    public void shutdown() {
+        isOnline = false;
+        this.resetPosition();
+        this.setState("FINAL");
+    }
+
+    /** Inform when Rover x sends data to CentralStation **/
+    public boolean sendData() {
+ 	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
+       return true;
+     }
+    
+    /** Inform when Rover x is notified by CentralStation **/
+    public void update() {
+   	   System.out.println("Rover ["+getName()+"] has been notified "+subject.getRequest());
+     }
+    
+    /** Inform when Rover x has finished its mission **/
+    public void missionDone() {
+  	   System.out.println("Rover ["+getName()+"] -- Mission Done");
+    }
+    
+    /** These operations map 1 to 1 with the Class Diagram
+     *  but the equivalent in Simbad's API will be used instead
+     * 	to have a working simulation.
+     */
     public void move(int dist) {
+    }
+
+    public void moveToCoord(Coordinate coord) {
     }
 
     public void rotate(ECardinalDirection dir) {
         orientation = dir;
         System.out.println("Rover ["+getName()+"] rotates to "+orientation);
     }
-
-    public void moveToCoord(Coordinate coord) {
-    }
-
-    public void shutdown() {
-        isOnline = false;
-        this.resetPosition();
-        this.getCanBeTraversed();
-        this.setState("FINAL");
-    }
-
-    public abstract void freeStorage();
-
-    public boolean sendData() {
- 	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
-       return true;
-     }
-    
-    public void update() {
-   	   System.out.println("Rover ["+getName()+"] has been notified "+subject.getRequest());
-     }
-    
-    public void missionDone() {
-  	   System.out.println("Rover ["+getName()+"] -- Mission Done");
-    }
-    
-    
-/*    public void update() {
-        if (subject.getRequest() == ERequest.EXPLORE) {
-            setState("SCOUTING");
-        } 
-        else if (subject.getRequest() == ERequest.SCAN) {
-            setState("SCANNING");
-        }
-        else if (subject.getRequest() == ERequest.MEASURE) {
-            setState("MEASURING");
-        }
-    }*/
-
+     
     /*****************************************************/
     /** Methods to adapt our implementation with Simbad **/
     /*****************************************************/

@@ -8,6 +8,7 @@ import javax.vecmath.Vector3d;
 
 public class RoverFactory {
 
+	/** Simbad Agent class needs a Vector3d position and a String name **/
 	public Rover createRover(String type, Vector3d pos, String name) {
       if (type.equals("scouting"))
           return new ScoutingRover(pos, name);

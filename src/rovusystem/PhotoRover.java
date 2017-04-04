@@ -14,32 +14,42 @@ import simbad.sim.RobotFactory;
 
 public class PhotoRover extends Rover {
 
-    private ArrayList<Scan> storage;
+	/** The storage should be an ArrayList<Scan>, for the sake of
+	 *  simplicity it will Strings instead. Otherwise it would require
+	 *  to create a Photo (composed of Coords, see ScoutingRover).
+	 */
+    private ArrayList<String> storage;
     
     public PhotoRover(Vector3d pos, String name) {
         super(pos, name);
-        storage = new ArrayList<Scan>();
+        storage = new ArrayList<String>();
         System.out.println("Creating a new PhotoRover object");
         
         RobotFactory.addCameraSensor(this);
     }
 
+    /** The Rover stops to scan a position and sends the location of the scanned area
+     *  If the storage is full (ie. size is 100 in our impl) then the rover clears it.
+     */
     public void scanPosition() {
     	this.setRotationalVelocity(0);
     	this.setTranslationalVelocity(0);
-		System.out.println("Rover ["+getName()+"] scanned "+location());
+    	if (storage.size() == 100) freeStorage();
+    	String scan = new String("Rover ["+getName()+"] scanned "+location());
+    	storage.add(scan);
+		System.out.println(scan);
     }
 
-    public boolean sendData() {
-	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
-	   return true;
-    }
- 
+    /** Empty the storage **/
     public void freeStorage() {
         storage.clear();
-        System.out.println("Clearing storage");
+        System.out.println("Rover ["+getName()+"] has cleared storage");
     }
     
+    /** Informs that the Rover is updating,
+     *  Changes its State from IDLE to SCANNING(active) if the request is SCAN
+     *  If the state is FINAL, the rover does nothing (same as state-chart)
+     */
     public void update() {
     	super.update();
     	if (getState() == "FINAL") return;
@@ -47,7 +57,10 @@ public class PhotoRover extends Rover {
             setState("SCANNING");
         }
     }
-    
+   
+    /** Informs that the Rover's mission is complete,
+     *  the Central Station goes to its next request
+     */
     public void missionDone() {
     	super.missionDone();
     	subject.setRequest(ERequest.MEASURE);
@@ -58,13 +71,17 @@ public class PhotoRover extends Rover {
     @Override
     public void performBehavior() {
     		
-		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-    		setState("COLLISION");
+		// We consider that the rover has finished his work when the counter hits 500 (easier sim).
+		// The counter increases even in IDLE state so we add 500 more time unit.
+		if (getState() != "FINAL") {
+			if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+	    		setState("COLLISION");
+			}
+			// We consider that the rover has finished his work when the counter hits 500 (easier sim).
+			if (this.getCounter() == 1000) {
+				setState("ENDING");
+			}
     	}
-		
-		if (this.getCounter() >= 1000 & getState() != "FINAL") {
-			setState("ENDING");
-		}
     		
 		switch(getState()) {
 			case "IDLE" :
@@ -72,7 +89,7 @@ public class PhotoRover extends Rover {
 			case "SCANNING":
 				setColor(new Color3f(Color.GREEN));
 				drive();
-				if (timer(5)) scanPosition();
+				if (timer(5)) scanPosition(); if (storage.size() == 100) sendData();
 				if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
 				break;
 			case "COLLISION":

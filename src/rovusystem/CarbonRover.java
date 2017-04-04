@@ -12,30 +12,38 @@ import javax.vecmath.Vector3d;
 
 public class CarbonRover extends Rover {
 
-    private ArrayList<Integer> storage;
+	/** The stored data is a String of the position
+	 *  as the CO2 level doesn't exist in the sim **/
+    private ArrayList<String> storage;
 
     public CarbonRover(Vector3d pos, String name) {
         super(pos, name);
-        storage = new ArrayList<Integer>();
+        storage = new ArrayList<String>();
         System.out.println("Creating a new CarbonRover object");
     }
-
+    
+    /** The Rover stops to measure a position and sends the location of the scanned area
+     *  If the storage is full (ie. size is 100 in our impl) then the rover clears it.
+     */
     public void measurePosition() {
     	this.setRotationalVelocity(0);
     	this.setTranslationalVelocity(0);
-        System.out.println("Rover ["+getName()+"] measured "+location());
-    }
-
-   public boolean sendData() {
-	   System.out.println("Rover ["+getName()+"] sent data to " + subject.toString());
-       return true;
+    	if (storage.size() == 100) freeStorage();
+    	String meas = new String("Rover ["+getName()+"] measured "+location());
+    	storage.add(meas);
+		System.out.println(meas);
     }
  
+    /** Empty the storage **/
     public void freeStorage() {
         storage.clear();
-        System.out.println("Clearing storage");
+        System.out.println("Rover ["+getName()+"] has cleared storage");
     }
     
+    /** Informs that the Rover is updating,
+     *  Changes its State from IDLE to MEASURING(active) if the request is MEASURE
+     *  If the state is FINAL, the rover does nothing (same as state-chart)
+     */
     public void update() {
     	super.update();
     	if (getState() == "FINAL") return;
@@ -48,21 +56,23 @@ public class CarbonRover extends Rover {
     @Override
     public void performBehavior() {
 		
-		if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
-    		setState("COLLISION");
+		if (getState() != "FINAL") {
+			if (this.collisionDetected() | this.anOtherAgentIsVeryNear()) {
+	    		setState("COLLISION");
+			}
+			// We consider that the rover has finished his work when the counter hits 500 (easier sim).
+			if (this.getCounter() == 1500) {
+				setState("ENDING");
+			}
     	}
-		
-		if (this.getCounter() >= 1500 & getState() != "FINAL") {
-			setState("ENDING");
-		}
     		
 		switch(getState()) {
 			case "IDLE" :
 				break;	
 			case "MEASURING":
-				setColor(new Color3f(Color.PINK));
+				setColor(new Color3f(Color.WHITE));
 				drive();
-				if (timer(5)) measurePosition();
+				if (timer(5)) measurePosition(); if (storage.size() == 100) sendData();
 				if (timer(100)) setRotationalVelocity(Math.PI / 2 * (0.5 - Math.random()));
 				break;
 			case "COLLISION":
@@ -71,7 +81,7 @@ public class CarbonRover extends Rover {
 				setState("MEASURING");
 				break;
 			case "ENDING":
-				setColor(new Color3f(Color.PINK));
+				setColor(new Color3f(Color.WHITE));
 				shutdown();
 				missionDone();
 				break;

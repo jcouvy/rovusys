@@ -50,7 +50,7 @@ public class ExampleEnvironment extends EnvironmentDescription {
 	        rightWall.setColor(new Color3f(Color.MAGENTA));
 	        add(rightWall);
 	        
-	        /** Adding a garage to store rovers when inactive (they need to be on the map in Simbad) **/
+/*	        *//** Adding a garage to store rovers when inactive (they need to be on the map in Simbad) **//*
 	        Wall garageWall1 = new Wall(new Vector3d(7.5, 0, 5), 5, 1, this);
 	        garageWall1.setColor(new Color3f(Color.YELLOW));
 	        add(garageWall1);
@@ -58,7 +58,7 @@ public class ExampleEnvironment extends EnvironmentDescription {
 	        Wall garageWall2 = new Wall(new Vector3d(5, 0, 7.5), 5, 1, this);
 	        garageWall2.setColor(new Color3f(Color.YELLOW));
 	        garageWall2.rotate90(1);
-	        add(garageWall2);
+	        add(garageWall2);*/
 	        
 	        /** Add 2 boxes around the center point */	        
 	        Box box1 = new Box(coords(0, -5), new Vector3f(3, 1, 3), this);
@@ -68,5 +68,14 @@ public class ExampleEnvironment extends EnvironmentDescription {
 	        Box box2 = new Box(coords(0, 5), new Vector3f(3, 1, 1), this);
 	        box2.setColor(new Color3f(Color.YELLOW));
 	        add(box2);
+
+	        Box box3 = new Box(coords(6, -3), new Vector3f(2, 1, 5), this);
+	        box3.setColor(new Color3f(Color.YELLOW));
+	        add(box3);
+	        
+	        Box box4 = new Box(coords(-6, 6), new Vector3f(2, 1, 5), this);
+	        box4.setColor(new Color3f(Color.YELLOW));
+	        add(box4);
+
 	    }
 }
